@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>NBA Players Stats Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron mt-3 text-center">
+            <h1><strong>NBA Players Stats Dashboard</strong></h1>
+            <p class="lead">Use the interactive charts below to explore the dataset</p>
+        </div>
+    </div>
+
+    <div class="container">           
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-4">
+                <h3><strong>----- Year/Type -----</strong></h3>
+                <h3><strong><select id='selDataset' onchange='optionChanged(this.value)'>
+                    <option value='PER-2017-Regular'>PER-2017-Regular</option>
+                    <option value='PER-2017-Playoff'>PER-2017-Playoff</option>
+                    <option value='PER-2016-Regular'>PER-2016-Regular</option>
+                    <option value='PER-2016-Playoff'>PER-2016-Playoff</option>
+                    <option value='PER-2015-Regular'>PER-2015-Regular</option>
+                    <option value='PER-2015-Playoff'>PER-2015-Playoff</option>
+                    <option value='PER-2014-Regular'>PER-2014-Regular</option>
+                    <option value='PER-2014-Playoff'>PER-2014-Playoff</option>
+                    <option value='PER-2013-Regular'>PER-2013-Regular</option>
+                    <option value='PER-2013-Playoff'>PER-2013-Playoff</option>
+                    <option value='PMV-2017-Regular'>PMV-2017-Regular</option>
+                    <option value='PMV-2017-Playoff'>PMV-2017-Playoff</option>
+                    <option value='PMV-2016-Regular'>PMV-2016-Regular</option>
+                    <option value='PMV-2016-Playoff'>PMV-2016-Playoff</option>
+                    <option value='PMV-2015-Regular'>PMV-2015-Regular</option>
+                    <option value='PMV-2015-Playoff'>PMV-2015-Playoff</option>
+                    <option value='PMV-2014-Regular'>PMV-2014-Regular</option>
+                    <option value='PMV-2014-Playoff'>PMV-2014-Playoff</option>
+                    <option value='PMV-2013-Regular'>PMV-2013-Regular</option>
+                    <option value='PMV-2013-Playoff'>PMV-2013-Playoff</option>
+                </select></strong></h3>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="plot"></div>
+    <script>
+        var url = "/nbasalary/PER/2017/Regular";
+        Plotly.d3.json(url, function(error, response) {
+            if (error) return console.warn(error);
+            console.log(response);
+            var data = [response];
+            var layout = {
+                title: 'NBA Player: Salary vs Performance',
+                showlegend: false,
+                autosize: true,
+                height: 1200,
+                xaxis: {title: 'Player Salary ($)'},
+                yaxis: {title: 'Player Efficiency Rating (PER) / Plus/Minus Value (PMV)'},
+            };
+            var PLOT = document.getElementById('plot');
+            Plotly.plot(PLOT, data, layout)
+        }) 
+
+        function updatebubblePlotly(newdata){
+            var PLOT = document.getElementById('plot');
+            Plotly.restyle(PLOT, 'x', [newdata.x]);
+            Plotly.restyle(PLOT, 'y', [newdata.y]);
+            Plotly.restyle(PLOT, 'hovertext', [newdata.hovertext])                        
+            Plotly.restyle(PLOT, 'marker.color', [newdata.marker.color])
+            Plotly.restyle(PLOT, 'marker.size', [newdata.marker.size])
+        }
+
+        function optionChanged(route){
+            var arr = route.split("-");
+            Plotly.d3.json(`/nbasalary/${arr[0]}/${arr[1]}/${arr[2]}`, function(error, data){
+                updatebubblePlotly(data);
+            });
+        }   
+
+        
+
+    </script>
+
+</body>
+</html>
